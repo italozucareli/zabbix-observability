@@ -34,7 +34,7 @@ Scripts for monitoring public clouds and managed services.
 *   `zbx_gcp_compute_status.sh` - GCP Compute instance status discovery.
 
 ### 🐳 `containers-and-orchestration/`
-Metrics for Docker, Kubernetes, and ephemeral environments.
+Advanced metrics for Docker, Kubernetes Control Plane, Governance, and Orchestration.
 *   `docker_container_lld.py` - Docker container discovery and stats via socket.
 *   `docker_container_state.sh` - Counts exited or crashed Docker containers.
 *   `k8s_node_ready.py` - Checks Kubernetes nodes ready status.
@@ -43,12 +43,45 @@ Metrics for Docker, Kubernetes, and ephemeral environments.
 *   `zbx_docker_health_status.sh` - Docker internal healthcheck status.
 *   `zbx_docker_mem_usage.sh` - Gets memory usage for a specific container.
 *   `zbx_docker_restart_count.sh` - Tracks specific container restart counts.
+*   `zbx_k8s_admission_webhooks.py` - LLD for validating/mutating webhook configurations.
+*   `zbx_k8s_api_latency.py` - Synthetic micro-transaction to measure K8s API Control Plane latency.
+*   `zbx_k8s_apiservice_health.py` - Health check for aggregated API services (e.g., metrics-server).
+*   `zbx_k8s_apiserver_metrics.py` - Aggregates 5xx HTTP errors directly from the kube-apiserver `/metrics` endpoint.
+*   `zbx_k8s_coredns_changes.py` - Tracks CoreDNS ConfigMap hash changes to prevent silent DNS outages.
+*   `zbx_k8s_crd_versions.py` - Audits Custom Resource Definitions (CRDs) for deprecated API versions (e.g., v1beta1).
+*   `zbx_k8s_cronjob_status.py` - LLD for CronJobs, tracking active executions and suspended states.
+*   `zbx_k8s_csr_pending.py` - Counts Certificate Signing Requests (CSRs) pending manual approval.
+*   `zbx_k8s_daemonset_misscheduled.py` - Detects DaemonSets trying to run on nodes with mismatched Taints/Tolerations.
 *   `zbx_k8s_daemonset_ready.sh` - Kubernetes DaemonSet readiness monitor.
 *   `zbx_k8s_deployment_replicas.sh` - Kubernetes Deployment replica availability %.
+*   `zbx_k8s_deployment_sync.py` - Identifies stuck Deployments by comparing generation vs observedGeneration.
+*   `zbx_k8s_endpoints_capacity.py` - Monitors Services approaching the 1000 endpoints limit to prevent kube-proxy overload.
+*   `zbx_k8s_evicted_pods.py` - Counts pods stuck in the Evicted state, tracking cluster garbage.
+*   `zbx_k8s_helm_secrets.py` - Decodes Helm v3 Secrets to discover and monitor release deployment statuses.
+*   `zbx_k8s_hpa_events.py` - Aggregates horizontal scaling events (scale up/down) frequency over time.
+*   `zbx_k8s_hpa_status.py` - LLD for Horizontal Pod Autoscalers, tracking current vs desired vs max replicas.
+*   `zbx_k8s_ingress_classes.py` - Discovers and monitors active Ingress Classes (nginx, alb, traefik).
 *   `zbx_k8s_ingress_status.sh` - Validates K8s Ingress provisioned IPs.
+*   `zbx_k8s_ingress_tls_expiry.py` - Directly parses kubernetes.io/tls Secrets to calculate SSL certificate expiration days.
+*   `zbx_k8s_job_failures.py` - Discovers Batch Jobs and alerts on silent task failures.
+*   `zbx_k8s_kubelet_versions.py` - Audits node Kubelet versions to detect failed cluster upgrades or version drift.
+*   `zbx_k8s_limit_ranges.py` - Checks if Namespaces enforce default CPU/Memory LimitRanges.
+*   `zbx_k8s_namespace_governance.py` - Audits Namespaces for mandatory compliance annotations/labels (e.g., billing-team).
+*   `zbx_k8s_node_conditions.py` - Monitors silent Node conditions like MemoryPressure, DiskPressure, and PIDPressure.
 *   `zbx_k8s_node_cpu_alloc.sh` - Kubernetes node CPU allocation percentage.
+*   `zbx_k8s_node_taints.py` - Tracks NoSchedule/NoExecute Taints applied to cluster nodes.
+*   `zbx_k8s_oomkilled_pods.py` - Scans all pods to detect and list containers terminated due to OOMKilled errors.
+*   `zbx_k8s_pdb_status.py` - Monitors Pod Disruption Budgets (PDBs) to ensure safe node draining.
 *   `zbx_k8s_pod_restarts.sh` - Total restarts across all containers in a pod.
+*   `zbx_k8s_priority_classes.py` - Discovers custom Priority Classes and their relative scheduling weights.
+*   `zbx_k8s_pv_status.py` - LLD for Persistent Volumes (PVs), alerting on Failed or Released phases.
 *   `zbx_k8s_pvc_usage.sh` - K8s Persistent Volume Claim disk usage %.
+*   `zbx_k8s_replicaset_orphans.py` - Counts orphaned or outdated ReplicaSets consuming etcd resources.
+*   `zbx_k8s_resource_quotas.py` - Monitors ResourceQuota utilization (CPU/RAM limits) per Namespace.
+*   `zbx_k8s_service_nodeports.py` - Discovers reserved physical NodePorts to prevent port collisions.
+*   `zbx_k8s_statefulset_revisions.py` - Detects StatefulSet updates that are stuck mid-rollout.
+*   `zbx_k8s_storage_classes.py` - Discovers available StorageClasses and their underlying provisioners.
+*   `zbx_k8s_warning_events.py` - Aggregates and categorizes cluster-wide Warning events (e.g., FailedScheduling).
 
 ### 🗄️ `databases-and-storage/`
 Deep monitoring for RDBMS, NoSQL, and storage fabrics.
