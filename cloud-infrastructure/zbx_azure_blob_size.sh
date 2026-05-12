@@ -1,0 +1,2 @@
+#!/bin/bash
+az monitor metrics list --resource /subscriptions/$1/resourceGroups/$2/providers/Microsoft.Storage/storageAccounts/$3 --metric UsedCapacity --interval PT1H --query 'value[0].timeseries[0].data[-1].average' -o tsv

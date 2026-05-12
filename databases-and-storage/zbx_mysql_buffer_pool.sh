@@ -1,0 +1,2 @@
+#!/bin/bash
+mysql -e "SHOW GLOBAL STATUS LIKE 'Innodb_buffer_pool_read_requests';" | awk 'NR==2{req=$2}; END{cmd="mysql -e \"SHOW GLOBAL STATUS LIKE '\''Innodb_buffer_pool_reads'\'';\""; cmd | getline; split($0, arr); reads=arr[2]; if(req>0) print (1 - (reads/req))*100; else print 100}'

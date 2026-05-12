@@ -1,0 +1,2 @@
+#!/bin/bash
+curl -s -X GET "https://api.cloudflare.com/client/v4/accounts/$1/load_balancers/pools" -H "Authorization: Bearer $2" -H "Content-Type: application/json" | jq '{data: [ .result[] | {"{#POOL_NAME}": .name, "healthy": .healthy} ]}'

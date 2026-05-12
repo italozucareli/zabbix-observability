@@ -1,0 +1,2 @@
+#!/bin/bash
+aws cloudwatch get-metric-statistics --namespace AWS/RDS --metric-name CPUUtilization --dimensions Name=DBInstanceIdentifier,Value=$1 --start-time $(date -u -d '10 minutes ago' +%FT%TZ) --end-time $(date -u +%FT%TZ) --period 300 --statistics Average --query 'Datapoints[-1].Average' --output text

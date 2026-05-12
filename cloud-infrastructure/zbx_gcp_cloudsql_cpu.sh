@@ -1,0 +1,2 @@
+#!/bin/bash
+gcloud monitoring metrics list --filter="metric.type=\"cloudsql.googleapis.com/database/cpu/utilization\" AND resource.labels.database_id=\"$1\"" --format="value(points[0].value.doubleValue)"

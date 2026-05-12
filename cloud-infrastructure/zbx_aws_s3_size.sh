@@ -1,0 +1,2 @@
+#!/bin/bash
+aws cloudwatch get-metric-statistics --namespace AWS/S3 --metric-name BucketSizeBytes --dimensions Name=BucketName,Value=$1 Name=StorageType,Value=StandardStorage --start-time $(date -u -d '1 day ago' +%FT%TZ) --end-time $(date -u +%FT%TZ) --period 86400 --statistics Average --query 'Datapoints[0].Average' --output text
