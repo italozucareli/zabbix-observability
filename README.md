@@ -200,6 +200,46 @@ Meta-monitoring for the Zabbix infrastructure itself.
 *   `zbx_unsupported_items_count.sh` - Total count of unsupported Zabbix items.
 *   `zbx_value_cache_hits.sh` - Zabbix Value Cache hit counter.
 
+### ⚡ `power-and-environment/`
+Deep monitoring for Datacenter Power Infrastructure, UPS (Nobreaks), ATS, PDUs, and Environmental conditions.
+*   `zbx_apc_ats_redundancy.sh` - Alerts if an Automatic Transfer Switch (ATS) loses its backup power source redundancy.
+*   `zbx_apc_ats_source_status.sh` - Checks synchronization and active power source (Source A/B) on APC ATS units.
+*   `zbx_apc_humidity_temp.sh` - Consolidated JSON payload for rack temperature and relative humidity via APC environmental probes.
+*   `zbx_apc_nmc_api_master.py` - Reads native REST API data from modern APC NMC v3 cards via HTTPS, bypassing SNMP limits.
+*   `zbx_apcupsd_events_parser.sh` - Parses `/var/log/apcupsd.events` to trigger alerts on critical power events.
+*   `zbx_apcupsd_master.py` - Master Item to convert all `apcaccess` output into a structured JSON payload.
+*   `zbx_delta_ups_battery_health.sh` - Specific Delta UPS MIB monitor for predictive battery replacement indicators.
+*   `zbx_eaton_xups_health.sh` - Uses proprietary Eaton XUPS-MIB to track deep hardware states like Bypass and Inverter status.
+*   `zbx_nut_active_alarms.sh` - Extracts the exact real-time alarm string currently broadcasted by the NUT daemon.
+*   `zbx_nut_ups_discovery.py` - LLD script to dynamically discover multiple UPS units managed by Network UPS Tools (NUT).
+*   `zbx_nut_ups_stats.py` - Master Item to extract metrics from a specific NUT-managed UPS.
+*   `zbx_sms_ups_avr_state.sh` - Monitors Automatic Voltage Regulator (AVR) Boost/Buck states for SMS/Legrand hardware.
+*   `zbx_snmp_generator_status.sh` - Tracks if the UPS dry contacts identify the backup generator as the active input source.
+*   `zbx_snmp_pdu_bank_status_lld.sh` - LLD for internal PDU banks/breakers to monitor segmented power cuts.
+*   `zbx_snmp_pdu_outlets_lld.sh` - LLD for discovering Smart PDU outlets and tracking individual server power port states.
+*   `zbx_snmp_pdu_power_draw.sh` - Consolidates the total amperage drawn across an entire managed PDU.
+*   `zbx_snmp_rfc1628_health.sh` - Universal SNMP UPS monitor (RFC 1628) for Battery Status, Charge %, and Minutes Remaining.
+*   `zbx_snmp_ups_alarms_lld.sh` - SNMP LLD to discover and track active hardware/environmental alarms triggered by the UPS.
+*   `zbx_snmp_ups_audible_alarm.sh` - Monitors if the UPS physical audible alarm (beeper) is currently sounding.
+*   `zbx_snmp_ups_bad_battery_count.sh` - Counts the number of defective battery cartridges in modular UPS systems.
+*   `zbx_snmp_ups_battery_current.sh` - Tracks battery bus Amperage to detect active charge or discharge states.
+*   `zbx_snmp_ups_battery_temp.sh` - Monitors internal battery temperature (Celsius) to prevent thermal runaway and lifespan degradation.
+*   `zbx_snmp_ups_battery_voltage.sh` - Reads DC bus voltage to ensure the charger is applying the correct float voltage.
+*   `zbx_snmp_ups_bypass_voltage.sh` - Health check on the raw bypass line voltage that will take the load if the inverter fails.
+*   `zbx_snmp_ups_efficiency.sh` - Calculates or reads the internal power efficiency percentage of the UPS inverter.
+*   `zbx_snmp_ups_env_probes_lld.sh` - Discovers and tracks external environmental probes attached to the UPS management card.
+*   `zbx_snmp_ups_fan_status_lld.sh` - LLD to monitor individual cooling fan statuses to prevent inverter overheating.
+*   `zbx_snmp_ups_load_capacity.sh` - Extracts the current inverter load percentage to aid in capacity planning.
+*   `zbx_snmp_ups_output_current.sh` - Tracks the exact Amperage being pulled by the servers from the UPS output.
+*   `zbx_snmp_ups_phases_lld.sh` - LLD for 3-Phase UPS systems, discovering L1/L2/L3 to monitor load unbalance.
+*   `zbx_snmp_ups_power_quality.sh` - Consolidates Input/Output Voltage and Frequency to detect grid anomalies and "dirty power".
+*   `zbx_snmp_ups_real_power.sh` - Reads the True Power (Watts) currently being consumed by the datacenter load.
+*   `zbx_snmp_ups_selftest.sh` - Checks the status and completion results of the UPS automated battery self-tests.
+*   `zbx_snmp_ups_test_date.sh` - Parses the exact date/timestamp of the last deep hardware diagnostic self-test.
+*   `zbx_ups_battery_lifecycle.sh` - Predictive maintenance script that tracks battery age in months based on installation date.
+*   `zbx_ups_energy_meter.sh` - Extracts total accumulated kWh meter to calculate data center Power Usage Effectiveness (PUE).
+*   `zbx_vertiv_ups_alarms.sh` - Vertiv/Liebert specific MIB monitor for critical active hardware conditions.
+
 ---
 
 ## 🚀 Quick Start Guide
