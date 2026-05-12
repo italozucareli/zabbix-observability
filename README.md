@@ -1,23 +1,21 @@
-# 👁️ Zabbix Enterprise Observability Toolkit
+# 👁️ Zabbix Enterprise Observability & Automation Toolkit
 
-A comprehensive repository of advanced scripts, Master Items, and Low-Level Discovery (LLD) rules designed to elevate Zabbix monitoring to Site Reliability Engineering (SRE) and Enterprise Implementation standards. 
+A comprehensive, SRE-grade repository of over 200 advanced scripts, Master Items, Low-Level Discovery (LLD) rules, and Event-Driven Automation webhooks designed to elevate Zabbix from a simple monitoring tool into a complete IT Operations Management (ITOM) platform.
 
-This toolkit focuses on bulk data collection via APIs, native OS parsing, and JSON payloads, minimizing Zabbix Server polling overhead by avoiding basic one-by-one checks.
+This toolkit focuses on **Bulk Data Collection** (via REST APIs and native JSON payloads) and **Closed-Loop Automation** (ITSM ticketing, auto-remediation, and ChatOps).
 
 ---
 
 ## 🏗️ Architecture & Philosophy
 
 To ensure scalability in mission-critical environments, these scripts adopt the following principles:
-*   **Master Items & JSON:** Scripts make a single call to the equipment or API, returning a complete JSON payload that Zabbix processes internally via LLD and Dependent Items.
-*   **Dynamic Discovery:** Reduces manual configuration. IPsec tunnels, BGP peers, Docker containers, IIS pools, and cloud instances are discovered automatically.
-*   **Zero-Overhead:** Relies on native OS tools (e.g., direct reading from `/proc` and `/sys` in Linux) to prevent overloading Zabbix pollers.
+*   **Zero-Overhead Polling:** Scripts make a single, bulk call to an equipment or API, returning a complete JSON payload. Zabbix processes this internally via LLD and Dependent Items, bypassing the need for hundreds of individual connections.
+*   **Dynamic Discovery:** Reduces manual configuration. VPNs, BGP peers, Kubernetes pods, Docker Swarm services, and UPS phases are discovered dynamically.
+*   **Event-Driven Automation:** Monitoring is only half the battle. This toolkit includes scripts that run as Zabbix Actions to automatically open/resolve ServiceNow incidents, trigger Ansible AWX playbooks, or alert PagerDuty.
 
 ---
 
 ## 📂 Repository Structure & Scripts
-
-The toolkit is divided into the following technological pillars:
 
 ### ☁️ `cloud-infrastructure/`
 Scripts for monitoring public clouds and managed services.
@@ -34,7 +32,7 @@ Scripts for monitoring public clouds and managed services.
 *   `zbx_gcp_compute_status.sh` - GCP Compute instance status discovery.
 
 ### 🐳 `containers-and-orchestration/`
-Advanced metrics for Docker, Kubernetes Control Plane, Governance, and Orchestration.
+Advanced metrics for Docker, Docker Swarm, and Kubernetes Control Plane & Governance.
 *   `docker_container_lld.py` - Docker container discovery and stats via socket.
 *   `docker_container_state.sh` - Counts exited or crashed Docker containers.
 *   `k8s_node_ready.py` - Checks Kubernetes nodes ready status.
@@ -46,31 +44,31 @@ Advanced metrics for Docker, Kubernetes Control Plane, Governance, and Orchestra
 *   `zbx_k8s_admission_webhooks.py` - LLD for validating/mutating webhook configurations.
 *   `zbx_k8s_api_latency.py` - Synthetic micro-transaction to measure K8s API Control Plane latency.
 *   `zbx_k8s_apiservice_health.py` - Health check for aggregated API services (e.g., metrics-server).
-*   `zbx_k8s_apiserver_metrics.py` - Aggregates 5xx HTTP errors directly from the kube-apiserver `/metrics` endpoint.
+*   `zbx_k8s_apiserver_metrics.py` - Aggregates 5xx HTTP errors directly from the kube-apiserver `/metrics`.
 *   `zbx_k8s_coredns_changes.py` - Tracks CoreDNS ConfigMap hash changes to prevent silent DNS outages.
-*   `zbx_k8s_crd_versions.py` - Audits Custom Resource Definitions (CRDs) for deprecated API versions (e.g., v1beta1).
+*   `zbx_k8s_crd_versions.py` - Audits CRDs for deprecated API versions (e.g., v1beta1).
 *   `zbx_k8s_cronjob_status.py` - LLD for CronJobs, tracking active executions and suspended states.
 *   `zbx_k8s_csr_pending.py` - Counts Certificate Signing Requests (CSRs) pending manual approval.
-*   `zbx_k8s_daemonset_misscheduled.py` - Detects DaemonSets trying to run on nodes with mismatched Taints/Tolerations.
+*   `zbx_k8s_daemonset_misscheduled.py` - Detects DaemonSets trying to run on nodes with mismatched Taints.
 *   `zbx_k8s_daemonset_ready.sh` - Kubernetes DaemonSet readiness monitor.
 *   `zbx_k8s_deployment_replicas.sh` - Kubernetes Deployment replica availability %.
 *   `zbx_k8s_deployment_sync.py` - Identifies stuck Deployments by comparing generation vs observedGeneration.
-*   `zbx_k8s_endpoints_capacity.py` - Monitors Services approaching the 1000 endpoints limit to prevent kube-proxy overload.
+*   `zbx_k8s_endpoints_capacity.py` - Monitors Services approaching the 1000 endpoints limit.
 *   `zbx_k8s_evicted_pods.py` - Counts pods stuck in the Evicted state, tracking cluster garbage.
 *   `zbx_k8s_helm_secrets.py` - Decodes Helm v3 Secrets to discover and monitor release deployment statuses.
 *   `zbx_k8s_hpa_events.py` - Aggregates horizontal scaling events (scale up/down) frequency over time.
 *   `zbx_k8s_hpa_status.py` - LLD for Horizontal Pod Autoscalers, tracking current vs desired vs max replicas.
 *   `zbx_k8s_ingress_classes.py` - Discovers and monitors active Ingress Classes (nginx, alb, traefik).
 *   `zbx_k8s_ingress_status.sh` - Validates K8s Ingress provisioned IPs.
-*   `zbx_k8s_ingress_tls_expiry.py` - Directly parses kubernetes.io/tls Secrets to calculate SSL certificate expiration days.
+*   `zbx_k8s_ingress_tls_expiry.py` - Directly parses kubernetes.io/tls Secrets to calculate SSL expiration days.
 *   `zbx_k8s_job_failures.py` - Discovers Batch Jobs and alerts on silent task failures.
-*   `zbx_k8s_kubelet_versions.py` - Audits node Kubelet versions to detect failed cluster upgrades or version drift.
+*   `zbx_k8s_kubelet_versions.py` - Audits node Kubelet versions to detect failed cluster upgrades.
 *   `zbx_k8s_limit_ranges.py` - Checks if Namespaces enforce default CPU/Memory LimitRanges.
-*   `zbx_k8s_namespace_governance.py` - Audits Namespaces for mandatory compliance annotations/labels (e.g., billing-team).
-*   `zbx_k8s_node_conditions.py` - Monitors silent Node conditions like MemoryPressure, DiskPressure, and PIDPressure.
+*   `zbx_k8s_namespace_governance.py` - Audits Namespaces for mandatory compliance annotations/labels.
+*   `zbx_k8s_node_conditions.py` - Monitors silent Node conditions like MemoryPressure and DiskPressure.
 *   `zbx_k8s_node_cpu_alloc.sh` - Kubernetes node CPU allocation percentage.
 *   `zbx_k8s_node_taints.py` - Tracks NoSchedule/NoExecute Taints applied to cluster nodes.
-*   `zbx_k8s_oomkilled_pods.py` - Scans all pods to detect and list containers terminated due to OOMKilled errors.
+*   `zbx_k8s_oomkilled_pods.py` - Scans all pods to detect containers terminated due to OOMKilled errors.
 *   `zbx_k8s_pdb_status.py` - Monitors Pod Disruption Budgets (PDBs) to ensure safe node draining.
 *   `zbx_k8s_pod_restarts.sh` - Total restarts across all containers in a pod.
 *   `zbx_k8s_priority_classes.py` - Discovers custom Priority Classes and their relative scheduling weights.
@@ -81,10 +79,26 @@ Advanced metrics for Docker, Kubernetes Control Plane, Governance, and Orchestra
 *   `zbx_k8s_service_nodeports.py` - Discovers reserved physical NodePorts to prevent port collisions.
 *   `zbx_k8s_statefulset_revisions.py` - Detects StatefulSet updates that are stuck mid-rollout.
 *   `zbx_k8s_storage_classes.py` - Discovers available StorageClasses and their underlying provisioners.
-*   `zbx_k8s_warning_events.py` - Aggregates and categorizes cluster-wide Warning events (e.g., FailedScheduling).
+*   `zbx_k8s_warning_events.py` - Aggregates and categorizes cluster-wide Warning events.
+*   `zbx_swarm_cluster_health.py` - Master Item tracking Docker Swarm Control Plane health and Raft consensus quorum.
+*   `zbx_swarm_dangling_images.sh` - Identifies untagged/orphaned images causing silent disk leaks on workers.
+*   `zbx_swarm_dangling_volumes.sh` - Identifies unattached local volumes left behind by removed services.
+*   `zbx_swarm_global_tasks_health.sh` - Counts failing `global` mode services not running the required 1 task per node.
+*   `zbx_swarm_manager_leader.sh` - Identifies if the polled Manager node is the active Raft Leader.
+*   `zbx_swarm_networks_lld.py` - LLD for Swarm overlay networks, discovering multi-host networking scopes.
+*   `zbx_swarm_node_drift_lld.py` - LLD for cluster nodes tracking Docker Engine versions to detect version drift.
+*   `zbx_swarm_node_labels_lld.py` - Discovers assigned Node Labels, ensuring placement constraints function properly.
+*   `zbx_swarm_nodes_lld.py` - LLD for Swarm nodes, tracking Ready status and Active availability.
+*   `zbx_swarm_pending_tasks.sh` - Counts tasks stuck in 'Pending', alerting on cluster resource starvation.
+*   `zbx_swarm_published_ports_lld.py` - LLD mapping Swarm Services to their exposed external ingress ports.
+*   `zbx_swarm_quorum_health.sh` - Verifies Raft Manager Quorum health (Total vs Reachable).
+*   `zbx_swarm_rejected_tasks.sh` - Counts 'Rejected' tasks indicating port collisions or volume mount failures.
+*   `zbx_swarm_secrets_configs_audit.sh` - Returns counts of Swarm Secrets and Configs to monitor bloat.
+*   `zbx_swarm_service_tasks_failed.sh` - Counts historical task failures (CrashLoops) for a specific Swarm service.
+*   `zbx_swarm_services_lld.py` - Master Item LLD that discovers Stacks and Services, returning Running vs Desired replicas.
+*   `zbx_swarm_worker_local_tasks_lld.py` - SRE Bridge: Runs on any Worker to map local containers to their parent Swarm Service Name.
 
 ### 🗄️ `databases-and-storage/`
-Deep monitoring for RDBMS, NoSQL, and storage fabrics.
 *   `check_table_locks.sh` - Identifies MySQL waiting table locks.
 *   `db_connection_pool.sh` - Counts active connections in PostgreSQL.
 *   `elasticsearch_cluster_lld.sh` - LLD for ElasticSearch indices health/size.
@@ -108,12 +122,51 @@ Deep monitoring for RDBMS, NoSQL, and storage fabrics.
 *   `zbx_pg_wal_size.sh` - PostgreSQL WAL directory size in bytes.
 *   `zbx_redis_evicted_keys.sh` - Redis evicted keys counter (OOM tracking).
 *   `zbx_redis_memory_fragmentation.sh` - Redis memory fragmentation ratio.
-*   `zbx_timescaledb_chunks.sh` - TimescaleDB chunks audit for Zabbix databases.
+*   `zbx_timescaledb_chunks.sh` - TimescaleDB chunks audit.
 *   `zbx_vmware_datastore.py` - VMware vSphere Datastore capacity via pyVim.
 *   `zfs_pool_health_lld.sh` - LLD for ZFS pool health and capacity.
 
+### ⚡ `power-and-environment/`
+Deep monitoring for Datacenter Power Infrastructure, UPS (Nobreaks), ATS, and PDUs.
+*   `zbx_apc_ats_redundancy.sh` - Alerts if an ATS loses its backup power source redundancy.
+*   `zbx_apc_ats_source_status.sh` - Checks synchronization and active power source on APC ATS units.
+*   `zbx_apc_humidity_temp.sh` - Consolidated JSON payload for rack temp/humidity via APC probes.
+*   `zbx_apc_nmc_api_master.py` - Reads native REST API data from modern APC NMC v3 cards via HTTPS.
+*   `zbx_apcupsd_events_parser.sh` - Parses `/var/log/apcupsd.events` to trigger alerts on critical power events.
+*   `zbx_apcupsd_master.py` - Master Item to convert all `apcaccess` output into a structured JSON payload.
+*   `zbx_delta_ups_battery_health.sh` - Specific Delta UPS MIB monitor for predictive battery replacement.
+*   `zbx_eaton_xups_health.sh` - Uses proprietary Eaton XUPS-MIB to track deep hardware states.
+*   `zbx_nut_active_alarms.sh` - Extracts the exact real-time alarm string broadcasted by the NUT daemon.
+*   `zbx_nut_ups_discovery.py` - LLD script to dynamically discover UPS units managed by NUT.
+*   `zbx_nut_ups_stats.py` - Master Item to extract metrics from a specific NUT-managed UPS.
+*   `zbx_sms_ups_avr_state.sh` - Monitors Automatic Voltage Regulator (AVR) Boost/Buck states for SMS hardware.
+*   `zbx_snmp_generator_status.sh` - Tracks if the UPS dry contacts identify the backup generator as the active source.
+*   `zbx_snmp_pdu_bank_status_lld.sh` - LLD for internal PDU banks/breakers to monitor segmented power cuts.
+*   `zbx_snmp_pdu_outlets_lld.sh` - LLD for discovering Smart PDU outlets and server power port states.
+*   `zbx_snmp_pdu_power_draw.sh` - Consolidates the total amperage drawn across an entire managed PDU.
+*   `zbx_snmp_rfc1628_health.sh` - Universal SNMP UPS monitor (RFC 1628) for Battery Status, Charge %, and Minutes Remaining.
+*   `zbx_snmp_ups_alarms_lld.sh` - SNMP LLD to discover and track active hardware/environmental alarms.
+*   `zbx_snmp_ups_audible_alarm.sh` - Monitors if the UPS physical audible alarm (beeper) is currently sounding.
+*   `zbx_snmp_ups_bad_battery_count.sh` - Counts the number of defective battery cartridges in modular UPS systems.
+*   `zbx_snmp_ups_battery_current.sh` - Tracks battery bus Amperage to detect active charge or discharge states.
+*   `zbx_snmp_ups_battery_temp.sh` - Monitors internal battery temperature (Celsius) to prevent thermal runaway.
+*   `zbx_snmp_ups_battery_voltage.sh` - Reads DC bus voltage to ensure the charger is applying the correct float voltage.
+*   `zbx_snmp_ups_bypass_voltage.sh` - Health check on the raw bypass line voltage.
+*   `zbx_snmp_ups_efficiency.sh` - Calculates or reads the internal power efficiency percentage of the UPS inverter.
+*   `zbx_snmp_ups_env_probes_lld.sh` - Discovers external environmental probes attached to the UPS.
+*   `zbx_snmp_ups_fan_status_lld.sh` - LLD to monitor individual cooling fan statuses to prevent overheating.
+*   `zbx_snmp_ups_load_capacity.sh` - Extracts the current inverter load percentage for capacity planning.
+*   `zbx_snmp_ups_output_current.sh` - Tracks the exact Amperage being pulled by the servers.
+*   `zbx_snmp_ups_phases_lld.sh` - LLD for 3-Phase UPS systems, discovering L1/L2/L3.
+*   `zbx_snmp_ups_power_quality.sh` - Consolidates I/O Voltage and Frequency to detect grid anomalies.
+*   `zbx_snmp_ups_real_power.sh` - Reads the True Power (Watts) currently being consumed.
+*   `zbx_snmp_ups_selftest.sh` - Checks the status and completion results of automated battery self-tests.
+*   `zbx_snmp_ups_test_date.sh` - Parses the exact date/timestamp of the last deep hardware diagnostic.
+*   `zbx_ups_battery_lifecycle.sh` - Tracks battery age in months based on installation date.
+*   `zbx_ups_energy_meter.sh` - Extracts total accumulated kWh meter to calculate PUE.
+*   `zbx_vertiv_ups_alarms.sh` - Vertiv/Liebert specific MIB monitor for critical active conditions.
+
 ### 🌐 `network-and-routing/`
-Network infrastructure, routing protocols, and SD-WAN.
 *   `check_bgp_peers.sh` - BGP peer established state via SNMP.
 *   `check_ospf_neighbors.sh` - OSPF neighbor full state via SNMP.
 *   `cisco_board_pro_status.py` - Cisco endpoint standby status via xAPI.
@@ -129,7 +182,6 @@ Network infrastructure, routing protocols, and SD-WAN.
 *   `zbx_fortigate_sdwan.sh` - FortiGate SD-WAN SLA metrics (Latency/Jitter/Loss).
 
 ### 💻 `operating-systems/`
-Low-level health checks for Linux and Windows servers.
 *   `check_cpu_iowait.sh` - Linux CPU iowait bottleneck percentage.
 *   `check_disk_inodes.sh` - Linux disk inode utilization percentage.
 *   `check_ntp_sync.sh` - NTP time synchronization status.
@@ -138,7 +190,6 @@ Low-level health checks for Linux and Windows servers.
 *   `check_zombie_procs.sh` - Linux zombie processes count.
 *   `iis_app_pools_lld.ps1` - Windows IIS Application Pools discovery.
 *   `systemd_services_lld.sh` - Linux enabled systemd services discovery.
-*   `ups_battery_charge.sh` - UPS battery charge percentage via apcupsd.
 *   `win_event_critical.ps1` - Windows critical event log counter.
 *   `zbx_linux_context_switches.sh` - Linux CPU context switches rate.
 *   `zbx_linux_deleted_open_files.sh` - Tracks deleted files holding disk space.
@@ -153,48 +204,7 @@ Low-level health checks for Linux and Windows servers.
 *   `zbx_linux_uptime_seconds.sh` - Exact system uptime in seconds.
 *   `zbx_tcp_socket_states.sh` - TCP socket states counter (ESTABLISHED, TIME_WAIT).
 
-### ⚡ `power-and-environment/`
-Deep monitoring for Datacenter Power Infrastructure, UPS (Nobreaks), ATS, PDUs, and Environmental conditions.
-*   `zbx_apc_ats_redundancy.sh` - Alerts if an Automatic Transfer Switch (ATS) loses its backup power source redundancy.
-*   `zbx_apc_ats_source_status.sh` - Checks synchronization and active power source (Source A/B) on APC ATS units.
-*   `zbx_apc_humidity_temp.sh` - Consolidated JSON payload for rack temperature and relative humidity via APC environmental probes.
-*   `zbx_apc_nmc_api_master.py` - Reads native REST API data from modern APC NMC v3 cards via HTTPS, bypassing SNMP limits.
-*   `zbx_apcupsd_events_parser.sh` - Parses `/var/log/apcupsd.events` to trigger alerts on critical power events.
-*   `zbx_apcupsd_master.py` - Master Item to convert all `apcaccess` output into a structured JSON payload.
-*   `zbx_delta_ups_battery_health.sh` - Specific Delta UPS MIB monitor for predictive battery replacement indicators.
-*   `zbx_eaton_xups_health.sh` - Uses proprietary Eaton XUPS-MIB to track deep hardware states like Bypass and Inverter status.
-*   `zbx_nut_active_alarms.sh` - Extracts the exact real-time alarm string currently broadcasted by the NUT daemon.
-*   `zbx_nut_ups_discovery.py` - LLD script to dynamically discover multiple UPS units managed by Network UPS Tools (NUT).
-*   `zbx_nut_ups_stats.py` - Master Item to extract metrics from a specific NUT-managed UPS.
-*   `zbx_sms_ups_avr_state.sh` - Monitors Automatic Voltage Regulator (AVR) Boost/Buck states for SMS/Legrand hardware.
-*   `zbx_snmp_generator_status.sh` - Tracks if the UPS dry contacts identify the backup generator as the active input source.
-*   `zbx_snmp_pdu_bank_status_lld.sh` - LLD for internal PDU banks/breakers to monitor segmented power cuts.
-*   `zbx_snmp_pdu_outlets_lld.sh` - LLD for discovering Smart PDU outlets and tracking individual server power port states.
-*   `zbx_snmp_pdu_power_draw.sh` - Consolidates the total amperage drawn across an entire managed PDU.
-*   `zbx_snmp_rfc1628_health.sh` - Universal SNMP UPS monitor (RFC 1628) for Battery Status, Charge %, and Minutes Remaining.
-*   `zbx_snmp_ups_alarms_lld.sh` - SNMP LLD to discover and track active hardware/environmental alarms triggered by the UPS.
-*   `zbx_snmp_ups_audible_alarm.sh` - Monitors if the UPS physical audible alarm (beeper) is currently sounding.
-*   `zbx_snmp_ups_bad_battery_count.sh` - Counts the number of defective battery cartridges in modular UPS systems.
-*   `zbx_snmp_ups_battery_current.sh` - Tracks battery bus Amperage to detect active charge or discharge states.
-*   `zbx_snmp_ups_battery_temp.sh` - Monitors internal battery temperature (Celsius) to prevent thermal runaway and lifespan degradation.
-*   `zbx_snmp_ups_battery_voltage.sh` - Reads DC bus voltage to ensure the charger is applying the correct float voltage.
-*   `zbx_snmp_ups_bypass_voltage.sh` - Health check on the raw bypass line voltage that will take the load if the inverter fails.
-*   `zbx_snmp_ups_efficiency.sh` - Calculates or reads the internal power efficiency percentage of the UPS inverter.
-*   `zbx_snmp_ups_env_probes_lld.sh` - Discovers and tracks external environmental probes attached to the UPS management card.
-*   `zbx_snmp_ups_fan_status_lld.sh` - LLD to monitor individual cooling fan statuses to prevent inverter overheating.
-*   `zbx_snmp_ups_load_capacity.sh` - Extracts the current inverter load percentage to aid in capacity planning.
-*   `zbx_snmp_ups_output_current.sh` - Tracks the exact Amperage being pulled by the servers from the UPS output.
-*   `zbx_snmp_ups_phases_lld.sh` - LLD for 3-Phase UPS systems, discovering L1/L2/L3 to monitor load unbalance.
-*   `zbx_snmp_ups_power_quality.sh` - Consolidates Input/Output Voltage and Frequency to detect grid anomalies and "dirty power".
-*   `zbx_snmp_ups_real_power.sh` - Reads the True Power (Watts) currently being consumed by the datacenter load.
-*   `zbx_snmp_ups_selftest.sh` - Checks the status and completion results of the UPS automated battery self-tests.
-*   `zbx_snmp_ups_test_date.sh` - Parses the exact date/timestamp of the last deep hardware diagnostic self-test.
-*   `zbx_ups_battery_lifecycle.sh` - Predictive maintenance script that tracks battery age in months based on installation date.
-*   `zbx_ups_energy_meter.sh` - Extracts total accumulated kWh meter to calculate data center Power Usage Effectiveness (PUE).
-*   `zbx_vertiv_ups_alarms.sh` - Vertiv/Liebert specific MIB monitor for critical active hardware conditions.
-
 ### 🛡️ `security-and-vpn/`
-Auditing, edge security, and VPN connections.
 *   `active_ssh_sessions.sh` - Active SSH user sessions count.
 *   `check_open_ports.sh` - Validates if a specific local port is listening.
 *   `failed_ssh_logins.sh` - Brute-force SSH failed logins counter.
@@ -205,7 +215,6 @@ Auditing, edge security, and VPN connections.
 *   `zbx_paloalto_gp_users.py` - Palo Alto GlobalProtect active users count.
 
 ### 🕸️ `web-api-dns/`
-Digital experience, synthetics, and web services.
 *   `advanced_api_monitor.py` - Deep HTTP transaction lifecycle timing analyzer.
 *   `api_json_value.py` - Extracts specific JSON values from REST APIs.
 *   `check_domain_expiry.sh` - Domain registration expiration days.
@@ -221,7 +230,6 @@ Digital experience, synthetics, and web services.
 *   `zbx_ssl_ocsp_chain.py` - SSL OCSP revocation and certificate chain validation.
 
 ### 🏛️ `zabbix-meta-monitoring/`
-Meta-monitoring for the Zabbix infrastructure itself.
 *   `zbx_alerter_processes.sh` - Active Zabbix alerter processes count.
 *   `zbx_db_config_bloat.sh` - Audit for unsupported items and disabled hosts.
 *   `zbx_db_connections_active.sh` - Active DB connections from Zabbix Server.
@@ -240,95 +248,93 @@ Meta-monitoring for the Zabbix infrastructure itself.
 *   `zbx_unsupported_items_count.sh` - Total count of unsupported Zabbix items.
 *   `zbx_value_cache_hits.sh` - Zabbix Value Cache hit counter.
 
+### 🤝 `integrations-and-itsm/`
+Event-driven automation, ChatOps, and ITSM ticketing integrations to connect Zabbix with your workflows.
+*   `zbx_awx_remediation.py` - Triggers Ansible Tower/AWX Job Templates for auto-remediation.
+*   `zbx_glpi_ticket.py` - Automatically opens and categorizes Helpdesk tickets in GLPI via REST API.
+*   `zbx_jira_ticket.py` - Opens Jira Service Management issues, mapping Zabbix tags to Jira labels.
+*   `zbx_msteams_adaptive.py` - Pushes modern, color-coded alerts to Microsoft Teams using Adaptive Cards.
+*   `zbx_netbox_sync.py` - Pulls active devices from NetBox and auto-registers them as hosts in Zabbix.
+*   `zbx_opsgenie_heartbeat.py` - Pushes a continuous heartbeat to Opsgenie; if Zabbix dies, it alerts the on-call team.
+*   `zbx_pagerduty_alert.py` - Routes critical Zabbix events to PagerDuty via API v2 for on-call escalation.
+*   `zbx_rundeck_webhook.py` - Fires Rundeck runbooks automatically based on specific Zabbix trigger severities.
+*   `zbx_servicenow_add_worknote.py` - Injects real-time diagnostic logs into an open SNOW Incident via Work Notes.
+*   `zbx_servicenow_change_request.py` - Opens a Standard Change Request before Zabbix executes an auto-remediation.
+*   `zbx_servicenow_check_approval.py` - Pauses auto-remediation actions until a manager approves the tied SNOW Change.
+*   `zbx_servicenow_check_maintenance.py` - Queries SNOW CMDB to suppress alerts if the host is in an approved Change window.
+*   `zbx_servicenow_cmdb_sync.py` - Registers newly discovered Zabbix hosts directly into SNOW CMDB tables.
+*   `zbx_servicenow_create_outage.py` - Links critical triggers to Business Services, creating Outage records for SLA.
+*   `zbx_servicenow_create_problem.py` - Opens a Problem ticket for root-cause analysis when Zabbix detects flapping.
+*   `zbx_servicenow_enrich_tags.py` - Queries SNOW to dynamically map affected downstream Business Services into Zabbix tags.
+*   `zbx_servicenow_escalate_incident.py` - Escalates open SNOW incidents if a Zabbix trigger remains active for hours.
+*   `zbx_servicenow_event.py` - Sends native ITOM Events instead of Incidents, allowing SNOW to handle correlation.
+*   `zbx_servicenow_get_oncall.py` - Queries SNOW On-Call Scheduling API to route notifications to the active shift engineer.
+*   `zbx_servicenow_incident.py` - Creates ServiceNow Incidents (INC), mapping Zabbix severity to SNOW urgency.
+*   `zbx_servicenow_kb_link.py` - Searches the SNOW KB using trigger keywords and injects the article link into the incident.
+*   `zbx_servicenow_major_incident.py` - Interacts with MIM module to promote catastrophic alerts into War Room Major Incidents.
+*   `zbx_servicenow_order_ritm.py` - Automatically orders Service Catalog Items (RITM) via API for automated provisioning.
+*   `zbx_servicenow_pause_sla.py` - Puts an incident to 'On Hold (Awaiting Vendor)' to pause SLA clocks when ISPs fail.
+*   `zbx_servicenow_resolve.py` - Automatically updates and resolves SNOW Incidents when Zabbix recovery operations trigger.
+*   `zbx_servicenow_sctask.py` - Opens non-urgent Service Catalog Tasks (SCTASK) for preventative maintenance.
+*   `zbx_servicenow_secops_vuln.py` - Integrates with SNOW SecOps to open Vulnerable Items (VIT) for CVEs/security flaws.
+*   `zbx_servicenow_sys_attachment.py` - Uploads diagnostic logs directly into a SNOW incident via the Attachment API.
+*   `zbx_servicenow_warranty_lld.py` - Discovers hardware assets in SNOW and imports warranty dates into Zabbix for predictive replacement.
+*   `zbx_statuspage_updater.py` - Integrates with Atlassian Statuspage to automatically switch a component to "Degraded".
+
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Quick Start Guide & Deployment Instructions
 
-These scripts are designed to be deployed as either **Zabbix Agent UserParameters** (local OS metrics) or **External Checks** (API polling from the Zabbix Server/Proxy).
+Because this repository covers both **Data Collection** (Polling) and **Closed-Loop Automation** (Alerting/ITSM), the deployment methods vary based on the script's purpose.
 
 ### 1. Prerequisites
-Ensure your Zabbix Server/Proxy or Agent has the necessary dependencies installed for the scripts you intend to use. Common dependencies include:
+Ensure your Zabbix Server/Proxy or Agent has the necessary dependencies installed:
 *   `jq` (for JSON parsing in Bash scripts)
 *   `python3` and `pip` packages: `requests`, `boto3`, `pyVim`, `pycurl`
-*   `aws-cli`, `gcloud`, or `az` CLI tools (for Cloud scripts)
-*   `postgresql-client` or `mysql-client` (for Database scripts)
+*   `snmpget` / `snmpwalk` (Net-SNMP tools for Power & Network scripts)
+*   `apcupsd` or `nut` (for specific local UPS monitoring)
+*   `docker` cli access (Agent must be in the `docker` group for Swarm/Container scripts)
 
-### 2. Deployment: UserParameters (Zabbix Agent)
-Use this method for scripts that extract local OS, Container, or Database data.
-
-1.  Copy the desired script to the monitored host (e.g., `/etc/zabbix/scripts/`).
+### 2. Data Collection: Zabbix Agent (UserParameters)
+Use this method for local OS, Docker Swarm, and Database metrics.
+1.  Copy the script to the monitored host (e.g., `/etc/zabbix/scripts/`).
 2.  Make the script executable:
 
         chmod +x /etc/zabbix/scripts/script_name.sh
 
-3.  Add the UserParameter to your `zabbix_agentd.conf` (or a file in `/etc/zabbix/zabbix_agentd.d/`):
+3.  Add the UserParameter to your `zabbix_agentd.conf`:
 
         UserParameter=custom.metric.name[*], /etc/zabbix/scripts/script_name.sh $1 $2
 
-4.  Restart the Zabbix Agent:
+4.  Restart the Zabbix Agent. Create an item of type **Zabbix agent** with the key `custom.metric.name[arg1]`.
 
-        systemctl restart zabbix-agent2
-
-5.  In the Zabbix Frontend, create an item of type **Zabbix agent** with the key `custom.metric.name[arg1,arg2]`.
-
-### 3. Deployment: External Checks (Zabbix Server / Proxy)
-Use this method for scripts that query REST APIs, cloud providers, or remote network equipment (e.g., Meraki, AWS, M365).
-
-1.  Copy the script to the `ExternalScripts` path defined in your `zabbix_server.conf` or `zabbix_proxy.conf` (usually `/usr/lib/zabbix/externalscripts/`).
+### 3. Data Collection: External Checks (Server/Proxy API Polling)
+Use this method for REST APIs (K8s, ServiceNow CMDB pulls, Cloud providers, Modern APC NMC3).
+1.  Copy the script to the `ExternalScripts` path on your Zabbix Server/Proxy (usually `/usr/lib/zabbix/externalscripts/`).
 2.  Make the script executable:
 
         chmod +x /usr/lib/zabbix/externalscripts/script_name.py
 
-3.  Test the script execution manually using the `zabbix` OS user to ensure network connectivity and proper permissions before adding it to the UI.
+3.  In the Zabbix UI, create an item of type **External check**.
+4.  In the **Key** field, reference the script and pass macros as arguments: `script_name.py["{$API_URL}","{$API_TOKEN}"]`.
 
-### 4. Deployment: Zabbix Sender (Asynchronous Pushing)
-Use this method for scripts that take longer to run (like the MTR network path trace) to prevent Zabbix poller timeouts.
+### 4. Zabbix Frontend: Master Items & LLD (JSON Parsing)
+For scripts that return large JSON payloads (Bulk Data Collection):
+1.  Create the **Master Item** (External Check or Agent) and set the **Type of information** to `Text`.
+2.  Create a **Discovery Rule** (Type: `Dependent item`), pointing to the Master Item.
+3.  Configure **LLD macros** mapping the JSON keys (e.g., `{#SERVICE_NAME}` ➔ `$.name`).
+4.  Create **Item prototypes** (Type: `Dependent item` pointing to the Master Item).
+5.  In the Item Prototype, add a **JSONPath Preprocessing** step to extract the specific metric (e.g., `$.data[?(@.name == "{#SERVICE_NAME}")].status.first()`).
 
-1.  Ensure the `zabbix_sender` utility is installed on the host running the script.
-2.  Place the script in a designated folder and schedule it via `cron`:
-
-        */5 * * * * zabbix /path/to/script.sh
-
-3.  Ensure the host is allowed to send data to the Zabbix Server/Proxy over TCP port `10051` (Trapper port).
-
-### 5. Zabbix Frontend Configuration (Master Items & LLD)
-Since this toolkit relies on Bulk Data Collection (returning one large JSON payload instead of multiple small queries), you must configure the frontend to parse the data properly.
-
-#### 5.1. Create the Master Item
-*   Navigate to **Data collection** > **Hosts** and click on your target host.
-*   Go to **Items** and click **Create item**.
-*   Set **Type** to `External check` (or `Zabbix agent`, depending on the script).
-*   In the **Key** field, reference the script and its macros: `script_name.py["{$API_USER}","{$API_PASS}"]`.
-*   **CRITICAL:** Set the **Type of information** to `Text`. This ensures Zabbix can ingest the entire JSON payload without cutting off characters.
-*   Set the **Update interval** (e.g., `5m`).
-
-#### 5.2. Create the Discovery Rule
-*   Navigate to **Discovery rules** on the same host and click **Create discovery rule**.
-*   Give it a name and set the **Type** to `Dependent item`.
-*   In the **Master item** dropdown, select the item you created in Step 5.1.
-
-#### 5.3. Configure LLD Macros
-*   Inside your Discovery Rule, switch to the **LLD macros** tab.
-*   Map the JSON keys to Zabbix macros. This teaches Zabbix how to read your payload. For example:
-    *   `{#DOMAIN}` ➔ `$.domain`
-    *   `{#STATUS}` ➔ `$.status`
-
-#### 5.4. Create Item Prototypes
-*   Inside the Discovery Rule, click on **Item prototypes** > **Create item prototype**.
-*   Set the **Type** to `Dependent item` and point it to the Master Item again.
-*   Use your LLD macros dynamically in the Name and Key (e.g., Name: `SSL Status of {#DOMAIN}`, Key: `ssl.status[{#DOMAIN}]`).
-*   Set the **Type of information** to `Numeric (unsigned)` or `Float`.
-
-#### 5.5. Apply JSONPath Preprocessing
-*   Go to the **Preprocessing** tab of the Item Prototype.
-*   Add a `JSONPath` step to extract the exact value needed for this specific prototype.
-*   Example parameter: `$.data[?(@.domain == "{#DOMAIN}")].status.first()`
+### 5. Event-Driven Automation: AlertScripts & Webhooks (ITSM/Integrations)
+Scripts in the `integrations-and-itsm/` directory DO NOT collect data. They act upon it.
+1.  Copy the script to the `AlertScriptsPath` on your Zabbix Server (usually `/usr/lib/zabbix/alertscripts/`).
+2.  Make the script executable (`chmod +x`).
+3.  In the Zabbix UI, go to **Administration > Media types** and create a new media type.
+4.  Set Type to **Script**, enter the script name, and define the parameters that will be passed to it (e.g., `{HOST.NAME}`, `{EVENT.SEVERITY}`, `{EVENT.ID}`).
+5.  Go to **Configuration > Actions > Trigger actions** and create an action that triggers this Media Type when an event occurs.
 
 ### 💡 Security Best Practices
-*   **Never hardcode passwords:** Always pass API tokens and credentials as arguments using Zabbix **Secret Macros** (`{$SECRET_PASSWORD}`). This masks the values in the frontend.
-*   **Sudo privileges:** If a script requires root access (e.g., `smartctl`, `lsblk`), configure `visudo` specifically for the `zabbix` user instead of running the entire agent as root:
-
-        zabbix ALL=(ALL) NOPASSWD: /usr/sbin/smartctl
-
-*   **API Rate Limiting:** When polling cloud providers (AWS, Azure) or SaaS platforms, adjust your update intervals carefully (e.g., `5m` or `10m`) to avoid API throttling and unexpected billing charges.
-*   **Secure Vaults:** For highly compliant environments, integrate HashiCorp Vault or CyberArk with Zabbix 6.0+ to retrieve API tokens dynamically instead of storing them in Zabbix databases.
+*   **Never hardcode passwords:** Always pass API tokens (ServiceNow, AWS, K8s) as arguments using Zabbix **Secret Macros** (`{$SECRET_TOKEN}`). This masks the values in the frontend.
+*   **Sudo Privileges:** If a local script requires root (e.g., `smartctl`, `lsblk`), use `visudo` specifically for the `zabbix` user: `zabbix ALL=(ALL) NOPASSWD: /usr/sbin/smartctl`. Do not run the entire agent as root.
+*   **API Rate Limiting:** When polling cloud providers or SaaS APIs, adjust update intervals carefully (e.g., `5m` or `10m`) to avoid HTTP 429 throttling limits.
